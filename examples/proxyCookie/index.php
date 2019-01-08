@@ -1,28 +1,26 @@
 <?php
-require_once('../../src/Sag.php');
+require_once '../../src/Sag.php';
 
 session_start();
 
 try {
-  // We are going to get our page's content from Sag.
-  $sag = new Sag('sbisbee.com');
-  $sag->setDatabase('outlook');
+    // We are going to get our page's content from Sag.
+    $sag = new Sag('sbisbee.com');
+    $sag->setDatabase('outlook');
 
-  if($_POST['login']) {
-    echo '<p>Using login()';
+    if ($_POST['login']) {
+        echo '<p>Using login()';
 
-    $_SESSION['AuthSession'] = $sag->login($_POST['username'], $_POST['password'], $sag::$AUTH_COOKIE);
-  }
-  else if($_SESSION['AuthSession']) {
-    echo '<p>Using setCookie()';
+        $_SESSION['AuthSession'] = $sag->login($_POST['username'], $_POST['password'], $sag::$AUTH_COOKIE);
+    } elseif ($_SESSION['AuthSession']) {
+        echo '<p>Using setCookie()';
 
-    $sag->setCookie('AuthSession', $_SESSION['AuthSession']);
-  }
+        $sag->setCookie('AuthSession', $_SESSION['AuthSession']);
+    }
 
-  $result = $sag->get('/');
-}
-catch(Exception $e) {
-  $error = $e->getMessage();
+    $result = $sag->get('/');
+} catch (Exception $e) {
+    $error = $e->getMessage();
 }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -36,12 +34,11 @@ catch(Exception $e) {
     <?php
     echo "<p>$error";
 
-    if($result) {
-      //Fancy display code.
-      var_dump($result);
-    }
-    else {
-      ?>
+    if ($result) {
+        //Fancy display code.
+        var_dump($result);
+    } else {
+        ?>
       <form method="post" action="./index.php">
         <input type="hidden" name="login" value="1"/>
         <label for="username">Name</label> <input type="text" name="username"/><br/>

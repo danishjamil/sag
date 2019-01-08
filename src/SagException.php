@@ -18,10 +18,11 @@
  * type being passed to a function.
  *
  * @version %VERSION%
- * @package Core
  */
-class SagException extends Exception {
-  public function __construct($msg = "", $code = 0) {
-    parent::__construct("Sag Error: $msg", $code);
-  }
+class SagException extends Exception
+{
+    public function __construct($msg = '', $code = 0)
+    {
+        parent::__construct("Sag Error: $msg", $code);
+    }
 }

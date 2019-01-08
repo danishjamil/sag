@@ -13,104 +13,102 @@
    limitations under the License.
 */
 
-require_once('SagFileCache.php');
+require_once 'SagFileCache.php';
 
 class SagFileTest extends PHPUnit_Framework_TestCase
 {
-  protected $cache;
+    protected $cache;
 
-  private $FILE_EXT = '.sag';
+    private $FILE_EXT = '.sag';
 
-  public function setUp()
-  {
-    $this->cache = new SagFileCache('/tmp/sag');
-  }
-
-  public function test_createNew()
-  {
-    foreach(array('/bwah', '/hithere', '/yup') as $url)
+    public function setUp()
     {
-      $prevSize = $this->cache->getUsage();
-
-      $item = new stdClass();
-      $item->body = new stdClass();
-      $item->body->foo = "bar";
-      $item->headers = new stdClass();
-      $item->headers->etag = "\"asdfasfsadfsadf\"";
-
-      $res = $this->cache->set($url, $item);
-      $this->assertTrue($res === true || is_object($res)); 
-
-      $file = '/tmp/sag/'.$this->cache->makeKey($url).$this->FILE_EXT;
-
-      $this->assertTrue(is_file($file));
-      $this->assertTrue(is_readable($file));
-      $this->assertTrue(is_writable($file));
-
-      $fileContents = file_get_contents($file);
-      //compare objects as PHP classes
-      $this->assertEquals(json_decode(file_get_contents($file)), $item);
-      //compare objects as JSON
-      $this->assertEquals($fileContents, json_encode($item));
-      //compare sizes as JSON
-      $this->assertEquals(strlen($fileContents), strlen(json_encode($item)));
-      //compare size on disk with cache's reported size
-      $this->assertEquals(filesize($file), $this->cache->getUsage() - $prevSize);
+        $this->cache = new SagFileCache('/tmp/sag');
     }
-  } 
 
-  public function test_get()
-  {
-    $this->assertNotNull($this->cache->get('/bwah'));
-    $this->assertNull($this->cache->get(rand(0,100)));
-  }
+    public function test_createNew()
+    {
+        foreach (['/bwah', '/hithere', '/yup'] as $url) {
+            $prevSize = $this->cache->getUsage();
 
-  public function test_newVersion()
-  {
-    $new = new stdClass();
-    $new->body = new stdClass();
-    $new->body->titFor = "tat";
-    $new->headers = new stdClass();
-    $new->headers->etag = "\"asdfasdfasdfasdf\"";
+            $item = new stdClass();
+            $item->body = new stdClass();
+            $item->body->foo = 'bar';
+            $item->headers = new stdClass();
+            $item->headers->etag = '"asdfasfsadfsadf"';
 
-    $file = $this->cache->makeFilename('/bwah');
+            $res = $this->cache->set($url, $item);
+            $this->assertTrue($res === true || is_object($res));
 
-    $oldContents = file_get_contents($file);
-    
-    $oldCopy = $this->cache->set('/bwah', $new);
-    $this->assertEquals(json_encode($oldCopy), $oldContents); 
-    $this->assertEquals($new, json_decode(file_get_contents($file)));
-  }
+            $file = '/tmp/sag/'.$this->cache->makeKey($url).$this->FILE_EXT;
 
-  public function test_delete()
-  {
-    $this->assertNotNull($this->cache->get('/bwah'));
-    $this->assertTrue($this->cache->remove('/bwah'));
-    $this->assertNull($this->cache->get('/bwah'));
-  }
+            $this->assertTrue(is_file($file));
+            $this->assertTrue(is_readable($file));
+            $this->assertTrue(is_writable($file));
 
-  public function test_setSize()
-  {
-    $size = 10;
-    $this->cache->setSize($size);
-    $this->assertEquals($size, $this->cache->getSize());
-  }
+            $fileContents = file_get_contents($file);
+            //compare objects as PHP classes
+            $this->assertEquals(json_decode(file_get_contents($file)), $item);
+            //compare objects as JSON
+            $this->assertEquals($fileContents, json_encode($item));
+            //compare sizes as JSON
+            $this->assertEquals(strlen($fileContents), strlen(json_encode($item)));
+            //compare size on disk with cache's reported size
+            $this->assertEquals(filesize($file), $this->cache->getUsage() - $prevSize);
+        }
+    }
 
-  public function test_clear()
-  {
-    $files = glob('/tmp/sag/*'.$this->FILE_EXT);
-    $this->assertFalse(empty($files));
+    public function test_get()
+    {
+        $this->assertNotNull($this->cache->get('/bwah'));
+        $this->assertNull($this->cache->get(rand(0, 100)));
+    }
 
-    $this->assertTrue($this->cache->clear());
+    public function test_newVersion()
+    {
+        $new = new stdClass();
+        $new->body = new stdClass();
+        $new->body->titFor = 'tat';
+        $new->headers = new stdClass();
+        $new->headers->etag = '"asdfasdfasdfasdf"';
 
-    $files = glob('/tmp/sag/*'.$this->FILE_EXT);
-    $this->assertTrue(empty($files));
-  }
+        $file = $this->cache->makeFilename('/bwah');
 
-  public function test_defaultSizes()
-  {
-    $this->assertEquals(1000000, $this->cache->getSize());
-    $this->assertEquals(0, $this->cache->getUsage());
-  }
+        $oldContents = file_get_contents($file);
+
+        $oldCopy = $this->cache->set('/bwah', $new);
+        $this->assertEquals(json_encode($oldCopy), $oldContents);
+        $this->assertEquals($new, json_decode(file_get_contents($file)));
+    }
+
+    public function test_delete()
+    {
+        $this->assertNotNull($this->cache->get('/bwah'));
+        $this->assertTrue($this->cache->remove('/bwah'));
+        $this->assertNull($this->cache->get('/bwah'));
+    }
+
+    public function test_setSize()
+    {
+        $size = 10;
+        $this->cache->setSize($size);
+        $this->assertEquals($size, $this->cache->getSize());
+    }
+
+    public function test_clear()
+    {
+        $files = glob('/tmp/sag/*'.$this->FILE_EXT);
+        $this->assertFalse(empty($files));
+
+        $this->assertTrue($this->cache->clear());
+
+        $files = glob('/tmp/sag/*'.$this->FILE_EXT);
+        $this->assertTrue(empty($files));
+    }
+
+    public function test_defaultSizes()
+    {
+        $this->assertEquals(1000000, $this->cache->getSize());
+        $this->assertEquals(0, $this->cache->getUsage());
+    }
 }
-?>
