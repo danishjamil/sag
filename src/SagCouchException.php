@@ -22,10 +22,11 @@
  * (string).
  *
  * @version %VERSION%
- * @package Core
  */
-class SagCouchException extends Exception {
-  public function __construct($msg = "", $code = 0) {
-    parent::__construct("CouchDB Error: $msg", $code);
-  }
+class SagCouchException extends Exception
+{
+    public function __construct($msg = '', $code = 0)
+    {
+        parent::__construct("CouchDB Error: $msg", $code);
+    }
 }
